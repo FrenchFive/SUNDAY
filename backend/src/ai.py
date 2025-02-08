@@ -30,17 +30,28 @@ def append_log(user, message):
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
         writer.writerow([user, message])  # Writing user and message as separate columns
 
-def append_userdata(data):
+def get_userdata():
+    data_path = f"{DATA_DIR}/userdata.csv"
+    if not os.path.exists(data_path):
+      return []
+    
+    with open(data_path, "r", newline='', encoding="utf-8") as file:
+        reader = csv.reader(file)
+        return list(reader)
+
+def append_userdata(key, data):
     data_path = f"{DATA_DIR}/userdata.csv"
 
     with open(data_path, "a", newline='', encoding="utf-8") as file:
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
-        writer.writerow(data)
+        writer.writerow([key, data])
 
 def extract(message):
   pattern = r"--adddata:([a-zA-Z0-9_-]+)-([a-zA-Z0-9_-]+)"  # Regex to match --adddata:key-value
   matches = re.findall(pattern, message)  # Find all matches
-  append_userdata(dict(matches))
+  print(matches)
+  for match in matches:
+    append_userdata(match[0], match[1])
 
   clean = re.sub(pattern, "", message).strip()
   
@@ -53,6 +64,7 @@ def personnality():
 def ai_chat(message):
   messages=[
     {"role": "developer", "content": personnality()},
+    {"role": "developer", "content": f"{str(get_userdata())}"}
   ]
   for mess in get_log():
     messages.append({"role": mess[0], "content": mess[1]})
@@ -64,8 +76,7 @@ def ai_chat(message):
   )
 
   response = completion.choices[0].message.content
-  data = extract(response)
-  print(data)
+  response = extract(response)
 
   append_log("user", message)
   append_log("assistant", response)
