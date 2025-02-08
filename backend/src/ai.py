@@ -3,6 +3,7 @@ from openai import OpenAI
 from pathlib import Path
 import dotenv
 import csv
+import re
 
 from consts import ROOT_DIR, DATA_DIR, BCKEND_DIR
 
@@ -26,9 +27,24 @@ def append_log(user, message):
 
     # Open the file in append mode
     with open(log_path, "a", newline='', encoding="utf-8") as file:
-        writer = csv.writer(file)
-        # Append the new message correctly
+        writer = csv.writer(file, quoting=csv.QUOTE_ALL)
         writer.writerow([user, message])  # Writing user and message as separate columns
+
+def append_userdata(data):
+    data_path = f"{DATA_DIR}/userdata.csv"
+
+    with open(data_path, "a", newline='', encoding="utf-8") as file:
+        writer = csv.writer(file, quoting=csv.QUOTE_ALL)
+        writer.writerow(data)
+
+def extract(message):
+  pattern = r"--adddata:([a-zA-Z0-9_-]+)-([a-zA-Z0-9_-]+)"  # Regex to match --adddata:key-value
+  matches = re.findall(pattern, message)  # Find all matches
+  append_userdata(dict(matches))
+
+  clean = re.sub(pattern, "", message).strip()
+  
+  return clean
 
 def personnality():
   with open(f"{DATA_DIR}/personality.txt", "r") as file:
@@ -48,12 +64,15 @@ def ai_chat(message):
   )
 
   response = completion.choices[0].message.content
+  data = extract(response)
+  print(data)
+
   append_log("user", message)
   append_log("assistant", response)
   return response
 
 def ai_audio(txt):
-  speech_file_path = f"{BCKEND_DIR}/speech.mp3"
+  speech_file_path = f"{DATA_DIR}/speech.mp3"
   response = CLIENT.audio.speech.create(
       model="tts-1",
       voice="sage",
