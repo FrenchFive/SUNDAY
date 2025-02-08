@@ -160,4 +160,5 @@ cython_debug/
 #.idea/
 
 
-*/speech.mp3
+speech.mp3
+chat.csv
