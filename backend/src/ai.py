@@ -28,7 +28,7 @@ def append_log(user, message):
     # Open the file in append mode
     with open(log_path, "a", newline='', encoding="utf-8") as file:
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
-        writer.writerow([user, message])  # Writing user and message as separate columns
+        writer.writerow([user, message.replace("\n","")])  # Writing user and message as separate columns
 
 def get_userdata():
     data_path = f"{DATA_DIR}/userdata.csv"
@@ -47,6 +47,7 @@ def append_userdata(key, data):
         writer.writerow([key, data])
 
 def extract(message):
+  #USER DATA
   pattern = r"--adddata:([a-zA-Z0-9_-]+)-([a-zA-Z0-9_-]+)"  # Regex to match --adddata:key-value
   matches = re.findall(pattern, message)  # Find all matches
   print(matches)
