@@ -1,32 +1,27 @@
-import speech_recognition as sr
+from RealtimeSTT import AudioToTextRecorder
+import sounddevice as sd
+import os
 
-'''
-print("Available Microphones:")
-for index, name in enumerate(sr.Microphone.list_microphone_names()):
-    print(f"{index}: {name}")
-'''
+from consts import ROOT_DIR
 
+# Get the default microphone index
+default_device_index = sd.default.device[0]
 
-def listen_and_write(mic_index=3):  # Change mic_index to the correct device index
-    recognizer = sr.Recognizer()
-    microphone = sr.Microphone(device_index=mic_index)
-    
-    print("Listening... (say 'exit' to stop)")
+# Define the path to your custom wake word file (.ppn)
+ww_path = f"{ROOT_DIR}/backend/data/sunday.onnx"
 
-    while True:
-        with microphone as source:
-            recognizer.adjust_for_ambient_noise(source)
-            # recognizer.energy_threshold = 300  # Adjust value if necessary
-            try:
-                audio = recognizer.listen(source)
-                text = recognizer.recognize_google(audio)
-                print(f"You said: {text}")
-                
-                if "sunday" in text.lower():
-                    print("-- SUNDAY DETECTED")
-                    break
-                
-            except sr.RequestError:
-                print("Error connecting to the recognition service.")
+def record():
+    # Initialize RealtimeSTT with the custom wake word
+    recorder = AudioToTextRecorder(
+        wakeword_backend="oww",
+        wake_words_sensitivity=0.35,
+        openwakeword_model_paths=ww_path,
+        wake_word_buffer_duration=1,
+        input_device_index=default_device_index
+    )
 
-listen_and_write()
+    print('Say "Sunday" to start recording.')
+    print(recorder.text())
+
+if __name__ == "__main__":
+    record()
