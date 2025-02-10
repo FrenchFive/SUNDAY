@@ -78,7 +78,7 @@ def extract(message):
     elif os.name == 'posix':
       temp_add("The current running apps are: "+os.system("ps -A"))
     else:
-      temp_add("The current running apps is unknown"))
+      temp_add("The current running apps is unknown")
 
   #GETScreenShot 
   pattern = r"--getscreenshot"  # Regex to match --getscreenshot
