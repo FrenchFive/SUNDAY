@@ -98,6 +98,4 @@ def ai_audio(txt):
       input=txt,
   )
   response.stream_to_file(speech_file_path)
-
-userInput = input("Enter your message: ")
-print(ai_chat(userInput))
+  return speech_file_path
