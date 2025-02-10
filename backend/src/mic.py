@@ -16,7 +16,7 @@ def play(audio):
     play(sound)
 
 def on_sunday():
-    threading.Thread(play, args=(DEFAULT_AUDIO,)).start()
+    threading.Thread(target=play, args=(DEFAULT_AUDIO,)).start()
 
 def record():
     recorder = AudioToTextRecorder(
