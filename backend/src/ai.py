@@ -22,13 +22,20 @@ def get_log():
         return list(reader)
 
 def append_log(user, message):
-    get_log()
     log_path = f"{DATA_DIR}/chat.csv"
+    
+    log = get_log()
 
-    # Open the file in append mode
-    with open(log_path, "a", newline='', encoding="utf-8") as file:
+    # Append the new message
+    log.append([user, message.replace("\n", "")])
+
+    # Keep only the last 10 entries
+    log = log[-10:]
+
+    # Write the trimmed log back to the file
+    with open(log_path, "w", newline='', encoding="utf-8") as file:
         writer = csv.writer(file, quoting=csv.QUOTE_ALL)
-        writer.writerow([user, message.replace("\n","")])  # Writing user and message as separate columns
+        writer.writerows(log)
 
 def get_userdata():
     data_path = f"{DATA_DIR}/userdata.csv"
