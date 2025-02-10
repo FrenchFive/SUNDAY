@@ -1,27 +1,35 @@
 from RealtimeSTT import AudioToTextRecorder
 import sounddevice as sd
-import os
+import threading
+from pydub import AudioSegment
+from pydub.playback import play
 
 from consts import ROOT_DIR
 
 # Get the default microphone index
-default_device_index = sd.default.device[0]
+DEVICE_ID = sd.default.device[0]
+DEFAULT_AUDIO = f"{ROOT_DIR}/backend/data/sfx_start.mp3"
+WW_PATH = f"{ROOT_DIR}/backend/data/sunday.onnx"
 
-# Define the path to your custom wake word file (.ppn)
-ww_path = f"{ROOT_DIR}/backend/data/sunday.onnx"
+def play(audio):
+    sound = AudioSegment.from_file(audio, format="mp3")
+    play(sound)
+
+def on_sunday():
+    threading.Thread(play, args=(DEFAULT_AUDIO,)).start()
 
 def record():
-    # Initialize RealtimeSTT with the custom wake word
     recorder = AudioToTextRecorder(
         wakeword_backend="oww",
         wake_words_sensitivity=0.35,
-        openwakeword_model_paths=ww_path,
+        openwakeword_model_paths=WW_PATH,
         wake_word_buffer_duration=1,
-        input_device_index=default_device_index
+        input_device_index=DEVICE_ID
     )
 
-    print('Say "Sunday" to start recording.')
+    print('Recording Launched - Say "Sunday"')
     print(recorder.text())
 
+
 if __name__ == "__main__":
-    record()
+    on_sunday()
