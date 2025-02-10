@@ -4,8 +4,8 @@ import mic
 
 while True:
     user = mic.record()
-    loop = False
-    while loop == False:
+    loop = True
+    while loop == True:
         result, submit = ai.ai_chat(user)
     
     print(result)

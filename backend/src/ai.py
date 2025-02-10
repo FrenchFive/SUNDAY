@@ -54,6 +54,7 @@ def append_userdata(key, data):
         writer.writerow([key, data])
 
 def extract(message):
+  loop = False
   def _ext(pattern, message):
     matches = re.findall(pattern, message)
     print (matches)
@@ -70,10 +71,24 @@ def extract(message):
   pattern = r"--getrunningapps"  # Regex to match --getrunningapps
   matches, message = _ext(pattern, message)
   if matches:
-    message = os.popen("wmic process get description").read()
+    loop = True
+    #get a list of the current running apps
+    if os.name == 'nt':
+      temp_add("The current running apps are: "+os.system("tasklist"))
+    elif os.name == 'posix':
+      temp_add("The current running apps are: "+os.system("ps -A"))
+    else:
+      temp_add("The current running apps is unknown"))
 
+  #GETScreenShot 
+  pattern = r"--getscreenshot"  # Regex to match --getscreenshot
+  matches, message = _ext(pattern, message)
+  if matches:
+    loop = True
+    #get a screenshot of the current screen
+    temp_add("The screenshot is saved at: "+os.system(f"gnome-screenshot -f {BCKEND_DIR}/screenshot.png"))
 
-  return message
+  return message, loop
 
 def get_temp():
     tmp_path = f"{DATA_DIR}/tmp.csv"
@@ -102,7 +117,6 @@ def personnality():
     return file.read()
 
 def ai_chat(message):
-  loop = True
   messages=[
     {"role": "developer", "content": personnality()},
     {"role": "developer", "content": f"{str(get_userdata())}"}
@@ -120,7 +134,7 @@ def ai_chat(message):
   )
 
   response = completion.choices[0].message.content
-  response = extract(response)
+  response, loop = extract(response)
 
   append_log("user", message)
   append_log("assistant", response)
