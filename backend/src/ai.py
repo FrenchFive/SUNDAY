@@ -54,28 +54,64 @@ def append_userdata(key, data):
         writer.writerow([key, data])
 
 def extract(message):
+  def _ext(pattern, message):
+    matches = re.findall(pattern, message)
+    print (matches)
+    clean = re.sub(pattern, "", message).strip()
+    return matches, clean
+    
   #USER DATA
   pattern = r"--adddata:([a-zA-Z0-9_-]+)-([a-zA-Z0-9_-]+)"  # Regex to match --adddata:key-value
-  matches = re.findall(pattern, message)  # Find all matches
-  print(matches)
+  matches, message = _ext(pattern, message)
   for match in matches:
     append_userdata(match[0], match[1])
-
-  clean = re.sub(pattern, "", message).strip()
   
-  return clean
+  #GETRUNNING APPS
+  pattern = r"--getrunningapps"  # Regex to match --getrunningapps
+  matches, message = _ext(pattern, message)
+  if matches:
+    message = os.popen("wmic process get description").read()
+
+
+  return message
+
+def get_temp():
+    tmp_path = f"{DATA_DIR}/tmp.csv"
+    if not os.path.exists(tmp_path):
+      return []
+    
+    with open(tmp_path, "r", newline='', encoding="utf-8") as file:
+        reader = csv.reader(file)
+        return list(reader)
+
+def temp_add(data):
+  tmp_path = f"{DATA_DIR}/tmp.csv"
+
+  with open(tmp_path, "a", newline='', encoding="utf-8") as file:
+    writer = csv.writer(file, quoting=csv.QUOTE_ALL)
+    writer.writerow([data])
+
+def temp_clear():
+  tmp_path = f"{DATA_DIR}/tmp.csv"
+  with open(tmp_path, "w", newline='', encoding="utf-8") as file:
+    writer = csv.writer(file, quoting=csv.QUOTE_ALL)
+    writer.writerows([])
 
 def personnality():
   with open(f"{DATA_DIR}/personality.txt", "r") as file:
     return file.read()
 
 def ai_chat(message):
+  loop = True
   messages=[
     {"role": "developer", "content": personnality()},
     {"role": "developer", "content": f"{str(get_userdata())}"}
   ]
   for mess in get_log():
     messages.append({"role": mess[0], "content": mess[1]})
+  if get_temp()!=[]:
+    for mess in get_temp():
+      messages.append({"role": "system", "content": mess[0]})
   messages.append({"role": "user", "content": message})
 
   completion = CLIENT.chat.completions.create(
@@ -88,7 +124,8 @@ def ai_chat(message):
 
   append_log("user", message)
   append_log("assistant", response)
-  return response
+  temp_clear()
+  return response, loop
 
 def ai_audio(txt):
   speech_file_path = f"{DATA_DIR}/speech.mp3"
