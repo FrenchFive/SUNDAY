@@ -163,3 +163,4 @@ cython_debug/
 speech.mp3
 chat.csv
 userdata.csv
+tmp.csv

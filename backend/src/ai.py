@@ -57,7 +57,8 @@ def extract(message):
   loop = False
   def _ext(pattern, message):
     matches = re.findall(pattern, message)
-    print (matches)
+    if matches:
+      print(matches)
     clean = re.sub(pattern, "", message).strip()
     return matches, clean
     

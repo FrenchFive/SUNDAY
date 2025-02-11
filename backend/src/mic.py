@@ -1,5 +1,7 @@
 from RealtimeSTT import AudioToTextRecorder
 import sounddevice as sd
+from pydub import AudioSegment
+from pydub.playback import play
 
 from consts import ROOT_DIR
 
@@ -7,6 +9,11 @@ from consts import ROOT_DIR
 DEVICE_ID = sd.default.device[0]
 DEFAULT_AUDIO = f"{ROOT_DIR}/backend/data/sfx_start.mp3"
 WW_PATH = f"{ROOT_DIR}/backend/data/sunday.onnx"
+
+def play_audio(audio):
+    """Plays an audio file."""
+    sound = AudioSegment.from_file(audio, format="mp3")
+    play(sound)
 
 def record():
     """Records audio, prints transcribed text, and plays sound if the wakeword is detected."""
