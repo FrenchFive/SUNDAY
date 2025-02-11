@@ -145,7 +145,7 @@ def ai_chat(message):
 def ai_audio(txt):
   speech_file_path = f"{DATA_DIR}/speech.mp3"
   response = CLIENT.audio.speech.create(
-      model="tts-1",
+      model="tts-1-hd",
       voice="sage",
       input=txt,
   )
