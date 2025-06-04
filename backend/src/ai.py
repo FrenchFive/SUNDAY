@@ -191,13 +191,14 @@ def capture_screenshot() -> str | None:
     temp_add(f"Screenshot failed: {ex}")
     return None
 
-def personnality():
+def personality():
+  """Return the assistant's base personality description."""
   with open(f"{DATA_DIR}/personality.txt", "r") as file:
     return file.read()
 
 def ai_chat(message):
   messages=[
-    {"role": "developer", "content": personnality()},
+    {"role": "developer", "content": personality()},
     {"role": "developer", "content": f"{str(get_userdata())}"},
     {"role": "system", "content": basic_context()},
   ]
