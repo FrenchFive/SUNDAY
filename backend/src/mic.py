@@ -7,8 +7,11 @@ import simpleaudio as sa
 
 from consts import DATA_DIR
 
-# Get the default microphone index
-DEVICE_ID = sd.default.device[0]
+# Automatically select the default input device
+try:
+    DEVICE_ID = sd.query_devices(kind="input")["index"]
+except Exception:
+    DEVICE_ID = sd.default.device[0]
 DEFAULT_AUDIO = f"{DATA_DIR}/sfx_start.mp3"
 WW_PATH = f"{DATA_DIR}/sunday.onnx"
 
