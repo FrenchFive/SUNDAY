@@ -2,3 +2,8 @@ openai==1.61.1
 python-dotenv==1.0.1
 SpeechRecognition==3.14.1
 PyAudio==0.2.14
+sounddevice==0.4.6
+pydub==0.25.1
+simpleaudio==1.0.4
+RealtimeSTT==0.3.104
+pyautogui==0.9.54
