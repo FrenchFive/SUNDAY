@@ -5,7 +5,7 @@ import urllib.request
 
 def web_search(query: str, max_results: int = 3) -> str:
     """Return a short string with search results from DuckDuckGo."""
-    url = f"https://duckduckgo.com/?q={urllib.parse.quote_plus(query)}&format=json"
+    url = f"https://api.duckduckgo.com/?q={urllib.parse.quote_plus(query)}&format=json"
     try:
         data = json.load(urllib.request.urlopen(url, timeout=10))
     except Exception as ex:

@@ -211,10 +211,10 @@ def ai_chat(message):
         if isinstance(info, dict) and "image" in info:
           messages.append({
               "role": "system",
-              "content": [
+              "content": json.dumps([
                   {"type": "text", "text": "Screenshot from user."},
                   {"type": "image_url", "image_url": {"url": info["image"], "detail": "low"}},
-              ],
+              ]),
           })
         else:
           messages.append({"role": "system", "content": mess[0]})
@@ -230,10 +230,10 @@ def ai_chat(message):
     if shot:
       messages.append({
           "role": "system",
-          "content": [
+          "content": json.dumps([
               {"type": "text", "text": "Screenshot from user."},
               {"type": "image_url", "image_url": {"url": shot, "detail": "low"}},
-          ],
+          ]),
       })
   if actions.get("running_apps"):
     if os.name == 'nt':
